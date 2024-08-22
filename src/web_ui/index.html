@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Model</title>
+
+    <style>
+        /* CSS to resize the button */
+        .offset_btn {
+            width: 100px;
+            height: 60px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" class="lapangan" width="1400" height="1000" style="border:1px solid #000000;"></canvas>
+    <div class="slidecontainer">
+        
+        <span class="slider_name">Scan Min : </span>
+        <input class="slider" type="range" min="0" max="100" value="50" id="slider_min">
+        <span id="value_min">1</span>
+
+    </div>
+    
+    <div class="slidecontainer">
+        <span class="slider_name">Scan Max : </span>
+        <input class="slider" type="range" min="0" max="100" value="50" id="slider_max">
+        <span id="value_max">1</span>
+    </div>
+    
+    <br>
+    <div>
+        <button class="offset_btn" onclick="offset()">OFFSET</button>
+    </div>
+</body>
+<script type="text/javascript" src="roslib.min.js"></script>
+<script src="index.js"></script>
+   
+</html>

@@ -1,0 +1,2 @@
+. devel/setup.bash
+rostopic echo /hardware/stm2pc

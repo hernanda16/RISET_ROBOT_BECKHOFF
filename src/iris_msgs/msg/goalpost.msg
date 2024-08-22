@@ -1,0 +1,20 @@
+float32 keeper_on_field_x
+float32 keeper_on_field_y
+
+float32 empty_goal_field_x
+float32 empty_goal_field_y
+float32 empty_goal_field_theta
+
+float32 empty_goal_frame_x
+float32 empty_goal_frame_y
+float32 empty_goal_frame_theta
+
+float32 empty_goal_min_tolerance_x
+float32 empty_goal_min_tolerance_y
+float32 empty_goal_max_tolerance_x
+float32 empty_goal_max_tolerance_y
+
+uint8 empty_goal_status
+
+float32 sudut_robot_ke_gawang_vision
+uint8 lock_goal_kiri_atau_kanan

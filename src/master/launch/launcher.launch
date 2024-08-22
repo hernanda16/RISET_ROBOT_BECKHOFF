@@ -1,0 +1,27 @@
+<launch>
+    <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
+        <arg name="port" value="9900"/>
+    </include>
+
+    <node name="web_video_server" pkg="web_video_server" type="web_video_server" output="screen">
+        <param name="port" value="9901"/>
+        <param name="ros_threads" value="8"/>
+    </node>
+
+    <include file="$(find roswww)/launch/roswww.launch">
+        <arg name="port" value="9999"/>
+        <arg name="cached" value="false"/>
+    </include>
+
+    <param name="with_robot" type="bool" value="$(arg with_robot)" />
+    <group if="$(arg with_robot)">
+        <include file="$(find hardware)/launch/hardware.launch" />
+        <include file="$(find vision)/launch/vision.launch" />
+        <include file="$(find communication)/launch/communication.launch" />
+        <node name="http_server" pkg="master" type="http_server.py" output="screen" respawn="true" />
+    </group>
+
+    <include file="$(find world_model)/launch/world_model.launch" />
+
+    <node name="master" pkg="master" type="master" output="screen" respawn="true"/> 
+</launch>

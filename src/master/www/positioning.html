@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>IRIS - Control Box</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="css/controlbox.css" />
+    <!-- <link rel="stylesheet" href="css/icon.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/duyplus/fontawesome-pro/css/all.min.css"> -->
+
+    <!-- script -->
+    <script src="js/lib/roslib-0.20.0.min.js"></script>
+    <script src="js/lib/eventemitter2.js"></script>
+    <script src="js/lib/angular-1.7.2.min.js"></script>
+    <script src="js/lib/jquery-3.4.1.min.js"></script>
+    <script src="js/positioning.js"></script>
+</head>
+
+<body ng-app="MainAppPositioning" ng-controller="PositioningController"
+    class="bg-zinc-900 text-zinc-50 overflow-hidden">
+    <div class="grid grid-rows-10 gap-2">
+        <div class="row-span-2 m-4">
+            <h1 class="text-center font-semibold text-4xl">Positioning ControlBox</h1>
+        </div>
+
+        <!-- TOGGLE -->
+
+        <div class="flex flex-row ">
+            <div class="flex flex-col mx-auto">
+                <button ng-click="toField()"
+                    class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+                    Field
+                </button>
+            </div>
+            <div class="flex flex-col mx-auto">
+                <button ng-click="toGoalKeeper()"
+                    class="p-4 mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+                    GoalKeeper
+                </button>
+            </div>
+            <div class="flex flex-col mx-auto">
+                <button ng-click="toBall()"
+                    class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+                    Ball
+                </button>
+            </div>
+            <div class="flex flex-col mx-auto">
+                <button ng-click="toLine()"
+                    class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+                    Line
+                </button>
+            </div>
+            <div class="flex flex-col mx-auto">
+                <button ng-click="toICP()"
+                    class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+                    ICP
+                </button>
+            </div>
+            <div class="flex flex-col mx-auto">
+                <button ng-click="toGrapher()"
+                    class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+                    Grapher
+                </button>
+            </div>
+            <div class="flex flex-col mx-auto">
+                <button ng-click="toExport()"
+                    class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+                    Export
+                </button>
+            </div>
+            <div class="flex flex-col mx-auto">
+                <button ng-click="toVirtualPoints()"
+                    class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+                    Virtual Points
+                </button>
+            </div>
+        </div>
+        <div class="flex flex-col mx-auto">
+            <button ng-click="toPositioning()"
+                class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+                Positioning
+            </button>
+        </div>
+    </div>
+
+
+    <div class="grid grid-cols-9 row-span-8 gap-6 m-1">
+        <div class="col-span-4">
+            <h1 class="text-center font-semibold text-2xl">Robot Display</h1>
+
+            <br> <br>
+
+            <!-- display camera -->
+            <div class="flex flex-row">
+                <div class="flex flex-col">
+                    <div class="mb-4 mx-4 w-[270px] h-[540px] bg-transparent shadow-lg">
+                        <h3 class="text-center py-2">Field Layer 1</h3>
+                        <img class="w-full h-full object-contain" src="{{ field_layer_1 }}" alt="" />
+                    </div>
+                    <!-- Make pause or resume button bellow frame -->
+                    <div class="mx-auto">
+                        <button ng-click="PauseStartStream(0)"
+                            class="{{GetButtonState(0).css}} text-slate-50 rounded-md px-3 py-2">
+                            {{GetButtonState(0).text}}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col">
+                    <div class="mb-4 mx-4 w-[270px] h-[540px] bg-transparent shadow-lg">
+                        <h3 class="text-center py-2">Field Layer 2</h3>
+                        <img class="w-full h-full object-contain" src="{{ field_layer_2 }}" alt="" />
+                    </div>
+                    <!-- Make pause or resume button bellow frame -->
+                    <div class="mx-auto">
+                        <button ng-click="PauseStartStream(0)"
+                            class="{{GetButtonState(0).css}} text-slate-50 rounded-md px-3 py-2">
+                            {{GetButtonState(0).text}}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col">
+                    <div class="mb-4 mx-4 w-[270px] h-[540px] bg-transparent shadow-lg">
+                        <h3 class="text-center py-2">Field Layer 3</h3>
+                        <img class="w-full h-full object-contain" src="{{ field_layer_3 }}" alt="" />
+                    </div>
+                    <!-- Make pause or resume button bellow frame -->
+                    <div class="mx-auto">
+                        <button ng-click="PauseStartStream(0)"
+                            class="{{GetButtonState(0).css}} text-slate-50 rounded-md px-3 py-2">
+                            {{GetButtonState(0).text}}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col">
+                    <div class="mb-4 mx-4 w-[270px] h-[540px] bg-transparent shadow-lg">
+                        <h3 class="text-center py-2">Field Layer Total</h3>
+                        <img class="w-full h-full object-contain" src="{{ field_layer_total }}" alt="" />
+                    </div>
+                    <!-- Make pause or resume button bellow frame -->
+                    <div class="mx-auto">
+                        <button ng-click="PauseStartStream(0)"
+                            class="{{GetButtonState(0).css}} text-slate-50 rounded-md px-3 py-2">
+                            {{GetButtonState(0).text}}
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gass</title>
+    <link rel="stylesheet" href="css/controlbox.css" />
+    <link rel="stylesheet" href="css/index.min.css" />
+  
+    <!-- script -->
+    <script src="js/lib/roslib-0.20.0.min.js"></script>
+    <script src="js/lib/eventemitter2.js"></script>
+    <script src="js/lib/angular-1.7.2.min.js"></script>
+    <script src="js/lib/jquery-3.4.1.min.js"></script>
+    <script src="js/main3.js"></script>
+    <script src="js/index.min.js"></script>
+</head>
+<body 
+ng-app="mainApp"
+ng-controller="mainAppController"
+>
+
+<!-- asli 360 x 640 -->
+  <img class="" id="get_sampling_data" src="{{frame_captured_image}}"
+    ng-click="get_x_y_data_baru()" alt="" />
+
+<button ng-click="CutContour()"
+class="w-1/2 bg-sky-500 px-3 py-2 my-2 rounded rounded-lg mx-auto">Cut</button>
+
+    
+</body>
+</html>

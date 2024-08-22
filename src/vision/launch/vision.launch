@@ -1,0 +1,10 @@
+<launch>
+    <node name="capture" pkg="vision" type="capture" output="screen" respawn="true"/>
+    <!-- <node name="detection" pkg="vision" type="detection" output="screen" respawn="true"/> -->
+    <node name="detection2" pkg="vision" type="detection2" output="screen" respawn="true"/>
+    <node name="web_adapter" pkg="vision" type="web_adapter" output="screen" respawn="true"/>
+
+  <!-- <include file="$(find foxglove_bridge)/launch/foxglove_bridge.launch">
+    <arg name="port" value="8765" />
+  </include> -->
+</launch>

@@ -1,0 +1,12 @@
+uint8 buttons 
+float32 odom_buffer_th 
+uint8 gp_sensors_left 
+uint8 gp_sensors_right 
+int16 left_enc_px 
+int16 right_enc_px 
+int16 left_dribble_enc_vx 
+int16 right_dribble_enc_vx 
+uint8 left_throttle  
+uint8 right_throttle 
+int16 current_kicker_position 
+float32 battery 

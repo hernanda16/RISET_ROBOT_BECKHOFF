@@ -1,0 +1,9 @@
+<launch>
+    <node name="pose_estimator" pkg="world_model" type="pose_estimator" output="screen" respawn="true"/>
+    <node name="ball_node" pkg="world_model" type="ball_node" output="screen" respawn="true"/>
+    <node name="line_node" pkg="world_model" type="line_node" output="screen" respawn="true"/>
+    <node name="obs_node" pkg="world_model" type="obs_node" output="screen" respawn="true"/>
+    <node name="goalpost_node" pkg="world_model" type="goalpost_node" output="screen" respawn="true"/>
+    <node name="positioning_2023" pkg="world_model" type="positioning_2023" output="screen" respawn="true"/>
+    <!-- <node name="positioning_2024" pkg="world_model" type="positioning_2024" output="screen" respawn="true"/> -->
+</launch>

@@ -1,0 +1,49 @@
+Vision:
+  brightness: 143
+  contrast: 141
+  saturation: 173
+  r_scan_min_cm: 0
+  r_scan_max_cm: 290
+  ball_y_min: 0
+  ball_y_max: 255
+  ball_u_min: 73
+  ball_u_max: 124
+  ball_v_min: 181
+  ball_v_max: 255
+  field_h_min: 0
+  field_h_max: 97
+  field_s_min: 78
+  field_s_max: 255
+  field_v_min: 92
+  field_v_max: 255
+  line_h_min: 0
+  line_h_max: 255
+  line_l_min: 195
+  line_l_max: 255
+  line_s_min: 0
+  line_s_max: 255
+  keeper_obs_y_min: 1
+  keeper_obs_y_max: 255
+  keeper_obs_u_min: 0
+  keeper_obs_u_max: 255
+  keeper_obs_v_min: 207
+  keeper_obs_v_max: 255
+Ballhandling:
+  low_dribble_arm_left: 125
+  low_dribble_arm_right: 251
+  high_dribble_arm_left: 202
+  high_dribble_arm_right: 161
+VisionSwitcher:
+  field_switch: 1
+  ball_switch: 1
+  line_switch: 1
+PointPlanner:
+  goal_k_thresh: 0
+  friend_k_thresh: 5
+  obs_rad_k_thresh: 10
+  obs_line_k_thresh: 6
+PassingPoint:
+  stat_closer_to_friend: 0
+  stat_closer_to_goal: 1
+1852728690:
+  1919251304: "\x00"

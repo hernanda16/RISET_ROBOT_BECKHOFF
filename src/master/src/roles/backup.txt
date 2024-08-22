@@ -1,0 +1,278 @@
+void Attacker::gameStyleC() const
+{
+    printf("Attacker::gameStyleC() %d\n", game_sub_status->value);
+
+    static double last_timer = 0;
+
+    game_sub_status->reentry(0, 0.5);
+    switch (game_sub_status->value)
+    {
+    case 0:
+        if (motion->motionToPoint(800 - 18, 75, angleToTarget(800 - 0, 0, *final_pose), 200, 180))
+        {
+            game_sub_status->value = 1;
+            buzzerControl(stm_data, 10, 10);
+        }
+        break;
+    case 1:
+        if (motion->motionAroundPointAngle(800 - 18, 18, 180 - 18, angleToTarget(ball->pos.x, ball->pos.y, *final_pose), 75, 70, 70))
+        {
+            game_sub_status->value = 2;
+            buzzerControl(stm_data, 10, 10);
+        }
+        break;
+    case 2:
+        if (motion->catchingBall(50, 50))
+        {
+            game_sub_status->value = 3;
+            buzzerControl(stm_data, 10, 10);
+        }
+
+        // if (motion->motionToPoint(700, 180, angleToTarget(150, 100, *final_pose), 150, 120))
+        // {
+        //     game_sub_status->value = 3;
+        //     buzzerControl(stm_data, 10, 10);
+        // }
+        break;
+    case 3:
+        // if ((ros::Time::now().toSec() - last_timer) < 0.3)
+        // {
+        //     return;
+        // }
+        motion->manualMotion(0, 0, 0);
+        if (ball->is_caught)
+        {
+            kickerControl(stm_data, THROTTLE_AIM, 8, 800);
+            last_timer = ros::Time::now().toSec();
+            game_sub_status->value = 4;
+        }
+        break;
+    case 4:
+        if ((ros::Time::now().toSec() - last_timer) < 0.3)
+        {
+            motion->manualMotion(0, 0, 0);
+            return;
+        }
+        if (motion->motionToPoint(800 - 70, 100, angleToTarget(800 - 750, 100, *final_pose), 100, 90))
+        {
+            game_sub_status->value = 5;
+            buzzerControl(stm_data, 10, 10);
+        }
+        break;
+    case 5:
+        if (motion->receiveBall())
+        {
+            game_sub_status->value = 6;
+            buzzerControl(stm_data, 10, 10);
+        }
+        break;
+    case 6:
+        if (motion->motionToPoint(800 - 150, 100, angleToTarget(800 - 700, 50, *final_pose), 100, 90))
+        {
+            game_sub_status->value = 7;
+            buzzerControl(stm_data, 10, 10);
+        }
+        break;
+    case 7:
+        motion->manualMotion(0, 0, 0);
+        if (ball->is_caught)
+        {
+            kickerControl(stm_data, THROTTLE_AIM, 8, 800);
+            last_timer = ros::Time::now().toSec();
+            game_sub_status->value = 8;
+        }
+        break;
+    case 8:
+        motion->manualMotion(0, 0, 0);
+        break;
+    }
+}
+
+
+
+
+case 0:
+        printf("PERSIAPAN TERIMA BOLA 1");
+        if (motion->motionToPoint(150, 150, angleToTarget(782, 18, *final_pose), 200, 100))
+        {
+            *robot_condition = 0;
+            game_sub_status->value = 11;
+        }
+        break;
+    case 999:
+        motion->manualMotion(0, 0, 0);
+        break;
+    case 11:
+        printf("TUNGGU TERIMA BOLA\n");
+        if (ball->status > 0)
+        {
+            motion->motionToPoint(final_pose->x, final_pose->y, angleToTarget(ball->pos.x, ball->pos.y, *final_pose), 0, 90);
+        }
+        else
+        {
+            motion->manualMotion(0, 0, 0);
+        }
+        if (shared_robot_data[2]->robot_condition == 11)
+        {
+            game_sub_status->value = 1;
+        }
+        break;
+    case 1:
+        printf("TERIMA BOLA 1\n");
+        if (ball->status == 0 && ball->is_caught == 0)
+        {
+            motion->motionToPoint(final_pose->x, final_pose->y, angleToTarget(shared_robot_data[2]->pose.x, shared_robot_data[2]->pose.y, *final_pose), 0, 90);
+        }
+        else
+        {
+            if (motion->receiveBall(70, 50))
+            {
+                game_sub_status->value = 20;
+                pos_x_setelah_terima = final_pose->x;
+                pos_y_setelah_terima = final_pose->y;
+            }
+        }
+        break;
+    case 20:
+        printf("PERSIAPAN TENDANG BOLA 1\n");
+        if (ball->is_caught == 12)
+        {
+            motion->catchingBall(10, 10);
+            printf("CARI BOLA ---------------------------- \n");
+        }
+        if (motion->motionToPoint(150, 150, angleToTarget(730, 100, *final_pose), 190, 120))
+        {
+            game_sub_status->value = 2;
+        }
+        break;
+    case 2:
+        printf("PERSIAPAN TENDANG BOLA 1\n");
+        if (ball->is_caught == 12)
+        {
+            motion->catchingBall(10, 10);
+            printf("CARI BOLA ---------------------------- \n");
+        }
+        if (motion->motionToPoint(70, 150, angleToTarget(730, 100, *final_pose), 190, 120))
+        {
+            game_sub_status->value = 3;
+        }
+        break;
+    case 3:
+        printf("TENDANG BOLA 1\n");
+
+        motion->manualMotion(0, 0, 0);
+        if (ball->is_caught == 2)
+        {
+            kickerControl(stm_data, NO_AIM, 8);
+            game_sub_status->value = 4;
+            *robot_condition = 11;
+            // buzzerControl(stm_data, 10, 10);
+        }
+        break;
+    case 4:
+        printf("PERSIAPAN TERIMA BOLA 2\n");
+
+        if (motion->motionToPoint(50, 150, angleToTarget(650, 100, *final_pose), 150, 120))
+        {
+            if (shared_robot_data[2]->robot_condition == 11)
+            {
+                game_sub_status->value = 5;
+                // buzzerControl(stm_data, 10, 10);
+            }
+            // buzzerControl(stm_data, 10, 10);
+        }
+
+        // if (pythagoras(final_pose->x, final_pose->y, 50, 150) < 50)
+        // {
+        //     if (shared_robot_data[2]->robot_condition == 11)
+        //     {
+        //         game_sub_status->value = 5;
+        //         // buzzerControl(stm_data, 10, 10);
+        //     }
+        // }
+        break;
+    case 5:
+        printf("TERIMA BOLA 2\n");
+
+        if (ball->status == 0)
+        {
+            motion->motionToPoint(final_pose->x, final_pose->y, angleToTarget(shared_robot_data[2]->pose.x, shared_robot_data[2]->pose.y, *final_pose), 0, 90);
+            // motion->motionToPoint(final_pose->x, final_pose->y, 0, 0, 90);
+        }
+        else
+        {
+            motion->manualMotion(0, 0, 0);
+        }
+
+        if (shared_robot_data[2]->robot_condition == 11)
+        {
+            game_sub_status->value = 51;
+            // buzzerControl(stm_data, 10, 10);
+        }
+        break;
+
+    // case 51:
+    //     if (ball->is_caught == 12)
+    //     {
+    //         motion->catchingBall(10, 10);
+    //         printf("CARI BOLA ---------------------------- \n");
+    //     }
+    //     if (final_pose->x >= 100)
+    //     {
+    //         if (motion->motionToPoint(pos_x_setelah_terima - 50, 150, angleToTarget(730, 100, *final_pose), 190, 120))
+    //         {
+    //             game_sub_status->value = 55;
+    //             // buzzerControl(stm_data, 10, 10);
+    //         }
+    //     }
+    //     else
+    //     {
+    //         if (motion->motionToPoint(pos_x_setelah_terima + 50, 150, angleToTarget(730, 100, *final_pose), 190, 120))
+    //         {
+    //             game_sub_status->value = 55;
+    //             // buzzerControl(stm_data, 10, 10);
+    //         }
+    //     }
+    case 51:
+        printf("TERIMA BOLA 2\n");
+        if (motion->receiveBall(100, 100))
+        {
+            game_sub_status->value = 55;
+            // buzzerControl(stm_data, 10, 10);
+            *robot_condition = 0;
+        }
+        break;
+
+    case 55:
+        printf("DRIBBLE SEMPURNA\n");
+
+        motion->manualMotion(0, 0, 0);
+        if (ball->is_caught == 2)
+        {
+            game_sub_status->value = 6;
+            // buzzerControl(stm_data, 10, 10);
+        }
+        break;
+    case 6:
+        printf("PERSIAPAN TENDANG GOAL\n");
+
+        if (motion->motionToPoint(final_pose->x, final_pose->y, angleToTarget(325, 0, *final_pose), 190, 120))
+        {
+            game_sub_status->value = 7;
+            // buzzerControl(stm_data, 10, 10);
+        }
+
+        break;
+    case 7:
+        printf("TENDANG GOAL\n");
+        motion->manualMotion(0, 0, 0);
+        if (ball->is_caught == 2)
+        {
+            kickerControl(stm_data, NO_AIM, 13);
+            game_sub_status->value = 8;
+            // buzzerControl(stm_data, 10, 10);
+        }
+        break;
+    case 8:
+        motion->manualMotion(0, 0, 0);
+        break;

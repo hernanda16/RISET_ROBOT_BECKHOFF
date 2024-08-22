@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>IRIS - Control Box</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="css/controlbox.css" />
+    <!-- <link rel="stylesheet" href="css/icon.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/duyplus/fontawesome-pro/css/all.min.css"> -->
+
+    <!-- script -->
+    <script src="js/lib/roslib-0.20.0.min.js"></script>
+    <script src="js/lib/eventemitter2.js"></script>
+    <script src="js/lib/angular-1.7.2.min.js"></script>
+    <script src="js/lib/jquery-3.4.1.min.js"></script>
+    <script src="js/realsense.js"></script>
+  </head>
+
+  <body
+    ng-app="MainAppRealsense"
+    ng-controller="RealsenseController"
+    class="bg-zinc-900 text-zinc-50 overflow-hidden"
+  >
+    <div class="grid grid-rows-10 gap-2">
+      <div class="row-span-2 m-4">
+        <h1 class="text-center font-semibold text-4xl">Realsense ControlBox</h1>
+      </div>
+      <div class="grid grid-cols-9 row-span-8 gap-6 m-1">
+        <div class="col-span-4">
+          <h1 class="text-center font-semibold text-2xl">Robot Display</h1>
+
+          <!-- display camera -->
+          <div class="flex flex-row">
+            <div class="flex flex-col">
+              <div
+                class="mb-4 mx-4 w-[270px] h-[540px] bg-transparent shadow-lg"
+              >
+                <h3 class="text-center py-2">All Display</h3>
+                <img
+                  class="w-full h-full object-contain"
+                  src="{{ frame_realsense_rgb }}"
+                  alt=""
+                />
+              </div>
+              <!-- Make pause or resume button bellow frame -->
+              <div class="mx-auto my-10">
+                <button
+                  ng-click="PauseStartStream(0)"
+                  class="{{GetButtonState(0).css}} text-slate-50 rounded-md px-3 py-2"
+                >
+                  {{GetButtonState(0).text}}
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-col">
+              <div
+                class="mb-4 mx-4 w-[270px] h-[540px] bg-transparent shadow-lg"
+              >
+                <h3 class="text-center py-2">Ball Threshold</h3>
+                <img
+                  class="w-x`full h-full object-contain"
+                  src="{{ frame_realsense_ball }}"
+                  alt=""
+                />
+              </div>
+              <!-- Make pause or resume button bellow frame -->
+              <div class="mx-auto my-10">
+                <button
+                  ng-click="PauseStartStream(1)"
+                  class="{{GetButtonState(1).css}} text-slate-50 rounded-md px-3 py-2"
+                >
+                  {{GetButtonState(1).text}}
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-col">
+              <div
+                class="mb-4 mx-4 w-[270px] h-[540px] bg-transparent shadow-lg"
+              >
+                <h3 class="text-center py-2">Obs Threshold</h3>
+                <img
+                  class="w-x`full h-full object-contain"
+                  src="{{ frame_realsense_obstacle }}"
+                  alt=""
+                />
+              </div>
+              <!-- Make pause or resume button bellow frame -->
+              <div class="mx-auto my-10">
+                <button
+                  ng-click="PauseStartStream(2)"
+                  class="{{GetButtonState(2).css}} text-slate-50 rounded-md px-3 py-2"
+                >
+                  {{GetButtonState(2).text}}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- control -->
+
+        <!-- Thresholding -->
+        <div class="col-span-5 bg-zinc-700 rounded-2xl overflow-hidden my-32">
+          <h1 class="text-center font-semibold text-2xl">Thresholding</h1>
+          <div class="px-4 py-4 gap-4 grid grid-cols-2">
+            <div class="slider my-auto">
+              <h1 class="text-center font-semibold text-xl">Ball</h1>
+              <div
+                class="grid grid-cols-6 pb-2"
+                ng-repeat="i in realsense_ball_threshold_params   "
+              >
+                <h1 class="col-span-1 place-self-center">{{i.label}}</h1>
+                <input
+                  ng-change="PublishBallThresholdParams(realsense_ball_threshold_params )"
+                  type="range"
+                  class="col-span-4 w-full"
+                  min="{{i.min}}"
+                  max="{{i.max}}"
+                  ng-model="i.value"
+                />
+                <h1 class="col-span-1 place-self-center">{{i.value}}</h1>
+              </div>
+            </div>
+            <div class="slider my-auto">
+              <h1 class="text-center font-semibold text-xl">Obstacle</h1>
+              <div
+                class="grid grid-cols-6 pb-2"
+                ng-repeat="i in realsense_obs_threshold_params   "
+              >
+                <h1 class="col-span-1 place-self-center">{{i.label}}</h1>
+                <input
+                  ng-change="PublishObsThresholdParams(realsense_obs_threshold_params )"
+                  type="range"
+                  class="col-span-4 w-full"
+                  min="{{i.min}}"
+                  max="{{i.max}}"
+                  ng-model="i.value"
+                />
+                <h1 class="col-span-1 place-self-center">{{i.value}}</h1>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex pb-4">
+            <button
+              ng-click="set_default_thresshold_lapangan()"
+              class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg"
+            >
+              Reset to Default
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

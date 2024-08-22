@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!==<![endif]-->
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>IRIS - Control Box</title>
+  <meta name="description" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="css/index.min.css" />
+  <link rel="stylesheet" href="css/controlbox.css" />
+
+  <!-- script -->
+  <script src="js/lib/roslib-0.20.0.min.js"></script>
+  <script src="js/lib/eventemitter2.js"></script>
+  <script src="js/lib/angular-1.7.2.min.js"></script>
+  <script src="js/lib/jquery-3.4.1.min.js"></script>
+  <script src="js/main3.js"></script>
+  <script src="js/index.min.js"></script>
+
+  <script>
+    //   function num(value){
+		// 	alert("Number " + value);
+		// }
+  </script>
+</head>
+
+<body ng-app="mainApp" ng-controller="mainAppController" class="bg-zinc-900 text-zinc-50 overflow-hidden">
+  <div class="row-span-2 m-4">
+    <h1 class="text-center font-semibold text-4xl">EXPORT</h1>
+  </div>
+  <div class="grid grid-rows-10 gap-2 ">
+
+    <!-- TOGGLE -->
+    <div class="vision-toggle">
+      <div class="switch-toggle">
+        <label class="switch">
+          <input id="toggle" ng-click="toggleVision($event.currentTarget)" ng-init="initToggle()" type="checkbox">
+          <div class="slider-toggle"></div>
+          <!-- {{ toggleSetter().css }} -->
+        </label>
+      </div>
+      <h1>{{variablechange}}</h1>
+    </div>
+
+    <!-- TOGGLE -->
+    <div class="flex flex-row ">
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toField()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Field
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toGoalKeeper()"
+          class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          GoalKeeper
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toBall()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Ball
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toLine()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Line
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toICP()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          ICP
+        </button>
+      </div>
+<div class="flex flex-col mx-auto">
+        <button ng-click="toGrapher()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Grapher
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toExport()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Export
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toVirtualPoints()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Virtual Points
+        </button>
+      </div>
+    </div>
+
+    <div class="container grid grid-cols-1 px-5 py-10 all_object">
+
+      <!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+      <!-- ========================================================================================================================================= -->
+
+      <div class="sidekiri float-left h-[100vh] overflow-auto container flex flex-col ">
+
+        <div class="vision-robot flex flex-col ">
+
+          <!-- copy nde kene -->
+
+          <!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+
+          <div class="mx-auto py-8 flex flex-wrap ">
+
+            <!-- ========================================================================================================================================= -->
+
+            <div class="flex flex-col">
+              <h3 class="mx-5 py-2">All Object View</h3>
+
+              <!-- ========================================================================================================================================= -->
+
+              <div class="mb-4 mx-5 w-[180px] h-[360px] bg-transparent shadow-lg">
+                <img class="w-full h-full object-contain" src="{{ frame_field_result_display }}" alt="TEST" />
+              </div>
+
+              <!-- ========================================================================================================================================= -->
+
+              <button ng-click="CaptureImage()"
+                class="w-1/2 bg-purple-400 px-3 py-2 my-2 rounded rounded-lg mx-auto">Capture</button>
+
+              <!-- ========================================================================================================================================= -->
+
+              <button ng-click="" class="w-1/2 bg-cyan-400 px-3 py-2 my-2 rounded rounded-lg mx-auto"
+                data-bs-toggle="modal" data-bs-target="#exportYUV">Export YUV</button>
+
+              <!-- ========================================================================================================================================= -->
+
+              <div
+                class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
+                id="exportYUV" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog relative w-auto pointer-events-none">
+                  <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div
+                      class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
+                      <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalLabel">
+                        Export YUV
+                      </h5>
+                      <button type="button"
+                        class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body relative p-4">
+
+                      <!-- ========================================================================================================================================= -->
+
+                      <button ng-click="ExportCSVLapangan()"
+                        class="w-custom bg-emerald-500 px-3 py-2 my-2 rounded mx-auto items-center">Lapangan</button>
+                      <button ng-click="ExportCSVBola()"
+                        class="w-custom bg-orange-400 px-3 py-2 my-2 rounded mx-auto items-center">Bola</button>
+                      <button ng-click="ExportCSVGaris()"
+                        class="w-custom bg-white px-3 py-2 my-2 rounded mx-auto items-center border-2 border-black"
+                        style="color: black;">Garis</button>
+
+                      <!-- ========================================================================================================================================= -->
+
+                    </div>
+                    <div
+                      class="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-4 border-t border-gray-200 rounded-b-md">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- ========================================================================================================================================= -->
+
+            <div class="flex flex-col">
+              <h3 class="mx-5 py-2">Lapangan</h3>
+
+              <!-- ========================================================================================================================================= -->
+
+              <div class="mb-4 mx-5 w-[180px] h-[360px] bg-transparent shadow-lg">
+                <img class="w-full h-full object-contain" src="{{ frame_field_raw }}" alt="" />
+              </div>
+
+              <!-- ========================================================================================================================================= -->
+
+              <button ng-click="CutContour()"
+                class="w-1/2 bg-sky-500 px-3 py-2 my-2 rounded rounded-lg mx-auto">Cut</button>
+
+              <!-- ========================================================================================================================================= -->
+
+              <button ng-click="" class="w-1/2 bg-pink-300 px-3 py-2 my-2 rounded rounded-lg mx-auto"
+                data-bs-toggle="modal" data-bs-target="#exportLUT">Export LUT</button>
+
+              <!-- ========================================================================================================================================= -->
+
+              <div
+                class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
+                id="exportLUT" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog relative w-auto pointer-events-none">
+                  <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div
+                      class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
+                      <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalLabel">
+                        Export LUT
+                      </h5>
+                      <button type="button"
+                        class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body relative p-4">
+
+                      <!-- ========================================================================================================================================= -->
+
+                      <button ng-click="ExportLUTLapangan()"
+                        class="w-custom bg-emerald-500 px-3 py-2 my-2 rounded mx-auto items-center">Lapangan</button>
+                      <button ng-click="ExportLUTBola()"
+                        class="w-custom bg-orange-400 px-3 py-2 my-2 rounded mx-auto items-center">Bola</button>
+                      <button ng-click="ExportLUTGaris()"
+                        class="w-custom bg-white px-3 py-2 my-2 rounded mx-auto items-center border-2 border-black"
+                        style="color: black;">Garis</button>
+
+                      <!-- ========================================================================================================================================= -->
+
+                    </div>
+                    <div
+                      class="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-4 border-t border-gray-200 rounded-b-md">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- ========================================================================================================================================= -->
+
+            <div class="flex flex-col">
+              <h3 class="mx-5 py-2">Bola</h3>
+
+              <!-- ========================================================================================================================================= -->
+
+              <div class="mb-4 mx-5 w-[180px] h-[360px] bg-transparent shadow-lg">
+                <img class="w-full h-full object-contain" src="{{ frame_ball_result }}" alt="" />
+              </div>
+
+              <!-- ========================================================================================================================================= -->
+
+              <button ng-click="ClearAllContour()"
+                class="w-1/2 bg-rose-500 px-3 py-2 my-2 rounded rounded-lg mx-auto">Clear All</button>
+
+              <!-- ========================================================================================================================================= -->
+
+              <button ng-click="" class="w-1/2 bg-red-300 px-3 py-2 my-2 rounded rounded-lg mx-auto"
+                data-bs-toggle="modal" data-bs-target="#pilihLUT">Pilih LUT</button>
+
+              <!-- ========================================================================================================================================= -->
+
+              <div
+                class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
+                id="pilihLUT" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog relative w-auto pointer-events-none">
+                  <div
+                    class=" modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div
+                      class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
+                      <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalLabel">
+                        Pilih LUT
+                      </h5>
+                      <button type="button"
+                        class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class=" modal-body relative p-4">
+
+                      <!-- ========================================================================================================================================= -->
+
+                      <button ng-click="triggerLUTLapangan()" data-bs-toggle="modal" data-bs-target="#pilihLUTLapangan"
+                        ng-click=""
+                        class="w-custom bg-emerald-500 px-3 py-2 my-2 rounded mx-auto items-center">Lapangan</button>
+                      <button ng-click="triggerLUTBola()" data-bs-toggle="modal" data-bs-target="#pilihLUTBola"
+                        ng-click=""
+                        class="w-custom bg-orange-400 px-3 py-2 my-2 rounded mx-auto items-center">Bola</button>
+                      <button ng-click="triggerLUTGaris()" data-bs-toggle="modal" data-bs-target="#pilihLUTGaris"
+                        ng-click=""
+                        class="w-custom bg-white px-3 py-2 my-2 rounded mx-auto items-center border-2 border-black"
+                        style="color: black;">Garis</button>
+
+                      <!-- ========================================================================================================================================= -->
+
+                    </div>
+                    <div
+                      class="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-4 border-t border-gray-200 rounded-b-md">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ========================================================================================================================================= -->
+
+              <div
+                class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
+                id="pilihLUTLapangan" tabindex="-1" aria-labelledby="exampleModalSmLabel" aria-modal="true"
+                role="dialog">
+                <div class="modal-dialog modal-lg relative w-auto pointer-events-none">
+                  <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div
+                      class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
+                      <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalSmLabel">
+                        LUT Lapangan
+                      </h5>
+                      <button type="button"
+                        class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body relative p-4">
+
+                      <!-- ========================================================================================================================================= -->
+
+                      <div class="flex flex-col">
+                        <div class="overflow-x-auto sm:-mx-6 lg:-mx-12">
+                          <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+                            <div class="overflow-hidden">
+                              <table class="min-w-full">
+                                <thead class="border-b">
+                                  <tr>
+                                    <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                      #
+                                    </th>
+                                    <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                      Tanggal
+                                    </th>
+                                    <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                      Aksi
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody id="tabelLapangan">
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- ========================================================================================================================================= -->
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ========================================================================================================================================= -->
+
+              <div
+                class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
+                id="pilihLUTBola" tabindex="-1" aria-labelledby="exampleModalSmLabel" aria-modal="true" role="dialog">
+                <div class="modal-dialog modal-lg relative w-auto pointer-events-none">
+                  <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div
+                      class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
+                      <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalSmLabel">
+                        LUT Bola
+                      </h5>
+                      <button type="button"
+                        class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body relative p-4">
+
+                      <!-- ========================================================================================================================================= -->
+
+                      <div class="flex flex-col">
+                        <div class="overflow-x-auto sm:-mx-6 lg:-mx-12">
+                          <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+                            <div class="overflow-hidden">
+                              <table class="min-w-full">
+                                <thead class="border-b">
+                                  <tr>
+                                    <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                      #
+                                    </th>
+                                    <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                      Tanggal
+                                    </th>
+                                    <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                      Aksi
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody id="tabelBola">
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- ========================================================================================================================================= -->
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ========================================================================================================================================= -->
+
+              <div
+                class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
+                id="pilihLUTGaris" tabindex="-1" aria-labelledby="exampleModalSmLabel" aria-modal="true" role="dialog">
+                <div class="modal-dialog modal-lg relative w-auto pointer-events-none">
+                  <div
+                    class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                    <div
+                      class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
+                      <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalSmLabel">
+                        LUT Garis
+                      </h5>
+                      <button type="button"
+                        class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body relative p-4">
+
+                      <!-- ========================================================================================================================================= -->
+
+                      <div class="flex flex-col">
+                        <div class="overflow-x-auto sm:-mx-6 lg:-mx-12">
+                          <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+                            <div class="overflow-hidden">
+                              <table class="min-w-full">
+                                <thead class="border-b">
+                                  <tr>
+                                    <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                      #
+                                    </th>
+                                    <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                      Tanggal
+                                    </th>
+                                    <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                      Aksi
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody id="tabelGaris">
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- ========================================================================================================================================= -->
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ========================================================================================================================================= -->
+
+            </div>
+
+            <!-- ========================================================================================================================================= -->
+
+            <div class="flex flex-col">
+              <h3 class="mx-5 py-2">Garis</h3>
+
+              <!-- ========================================================================================================================================= -->
+
+              <div class="mb-4 mx-5 w-[180px] h-[360px] bg-transparent shadow-lg">
+                <img class="w-full h-full object-contain" src="{{ frame_line_ch }}" alt="" />
+              </div>
+
+              <!-- ========================================================================================================================================= -->
+
+              <button ng-click="AmbilLagi()" class="w-1/2 bg-stone-600 px-3 py-2 my-2 rounded rounded-lg mx-auto">Ambil
+                Lagi</button>
+
+            </div>
+
+            <!-- ========================================================================================================================================= -->
+
+            <div id="tes" class="flex flex-col">
+
+              <!-- <div class="flex flex-col"> -->
+              <h3 class="mx-5 py-2">Captured</h3>
+              <!-- asli 360 x 640 -->
+              <!-- <div class="mt-4"> -->
+              <img class=" mx-5 capture_image" id="get_sampling_data" src="{{frame_captured_image}}"
+                ng-click="get_x_y_data()" alt="" />
+              <!-- </div> -->
+              <!-- </div> -->
+
+
+            </div>
+
+
+            <!-- ========================================================================================================================================= -->
+            <!-- CAMERA PARAMS -->
+            <div class="flex flex-col px-3 exp_cam_param">
+              <div class="col-span-5 bg-zinc-700 rounded-2xl overflow-hidden">
+                <h1 class="text-center font-semibold text-2xl">Camera Params</h1>
+                <div class="slider my-auto px-4">
+                  <!-- REPEAT THRESSHOLD -->
+                  <div class="grid grid-cols-6 pb-2" ng-repeat="i in camera_params">
+                    <h1 class="col-span-1 place-self-center px-3">{{i.label}}</h1>
+                    <input ng-change="PublishCameraParams(camera_params)" type="range" class="col-span-4 w-full"
+                      min="{{i.min}}" max="{{i.max}}" ng-model="i.value" />
+                    <h1 class="col-span-1 place-self-center">{{i.value}}</h1>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+
+
+          </div>
+
+
+          <!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+          <!-- ========================================================================================================================================= -->
+
+
+          <!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+          <!-- ========================================================================================================================================= -->
+
+        </div>
+
+      </div>
+    </div>
+
+</body>
+
+</html>

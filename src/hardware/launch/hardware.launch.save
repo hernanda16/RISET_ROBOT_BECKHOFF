@@ -1,0 +1,6 @@
+<launch>
+    <node name="motor_main" pkg="hardware" type="motor_main" output="screen" respawn="true"/>
+    <node name="stm_main" pkg="hardware" type="stm_main" output="screen" respawn="true"/> TODO: change output to screen>
+    <node name="stm_ballhandling" pkg="hardware" type="stm_ballhandling" output="screen" respawn="true"/>
+    <node name="stm_serial" pkg="hardware" type="stm_serial" output="screen" respawn="true"/>
+</launch>

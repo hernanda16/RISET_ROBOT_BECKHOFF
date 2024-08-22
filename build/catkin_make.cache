@@ -1,0 +1,2 @@
+communication:hardware:iris_msgs:master:vision:world_model
+-DCATKIN_DEVEL_PREFIX=/run/media/her/Data/IRIS/RISET_IRIS_ROBOT/devel -DCMAKE_INSTALL_PREFIX=/run/media/her/Data/IRIS/RISET_IRIS_ROBOT/install -G Unix Makefiles

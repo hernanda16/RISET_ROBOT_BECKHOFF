@@ -1,0 +1,200 @@
+Init:
+  pose_x: 0 #30
+  pose_y: -30 #400
+  pose_th: 90 #0
+  role: 2
+
+# ICP:
+#   icp_max_iterations: 50 # This will set maximum ICP iteration to get convexed
+#   threshold_icp_score: 200 # This is threshold icp score
+#   pos_diff: 5 # This is threshold that ICP will run if robot was moved within this threshold
+#   icp_gain: 0.015 # Used for ICP complementary filter
+#   min_line_points_found_threshold: 10 # Filter counted line points
+
+Camera:
+  camera_path: /dev/v4l/by-id/usb-046d_C922_Pro_Stream_Webcam_70F3B3DF-video-index0
+  cam_offset_x: 6 #0 # This is used to center camera by software
+  cam_offset_y: 15 #35 # This is used to center camera by software
+  obs_size_threshold: 1000 # Not an obstacle if his size is less than this variable
+  glad_lt_x: 0
+  glad_lt_y: 85
+  glad_rt_x: 358
+  glad_rt_y: 142
+  glad_lb_x: 0
+  glad_lb_y: 506
+  glad_rb_x: 357
+  glad_rb_y: 450
+  r_cam: 85 # The program will exclude center of camera with this radius
+  outer_mask_radius: 249
+  inner_mask_radius: 56
+
+Unicast:
+  BS_port: 5666
+  my_port: 5666
+
+Multicast:
+  iface: wlo1
+  multicast_ip: 224.16.32.82
+  port: 3333
+
+Ballhandling:
+  ball_status_gp_left: 82 # This used to get ball status
+  ball_status_gp_right: 82 # This used to get ball status
+  dribble_gp_left: 82 # This used to trigger dribble
+  dribble_gp_right: 82 # This used to trigger dcalribble
+
+  low_dribble_arm_left: 58 #168
+  low_dribble_arm_right: 181 #138
+
+  high_dribble_arm_left: 120 #214
+  high_dribble_arm_right: 121 #95
+
+  perfect_backward_arm_left: 85
+  perfect_backward_arm_right: 85
+
+  perfect_forward_arm_left: 50
+  perfect_forward_arm_right: 50
+
+  dribble_arm_left_kick: 110
+  dribble_arm_right_kick: 110
+
+  kp_throttle_control: 88 #140     #80
+  ki_throttle_control: 0.1 #0.0000001      #0.1
+  kd_throttle_control: 1.8
+
+  kp_dribble_vel: 16 #14
+  ki_dribble_vel: 0.1
+  kd_dribble_vel: 0
+
+# Ballhandling:
+#   ball_status_gp_left: 100 # This used to get ball status
+#   ball_status_gp_right: 100 # This used to get ball status
+#   dribble_gp_left: 100 # This used to trigger dribble
+#   dribble_gp_right: 100 # This used to trigger dcalribble
+
+#   low_dribble_arm_left: 118 #168
+# Ballhandling:
+#   ball_status_gp_left: 100 # This used to get ball status
+#   ball_status_gp_right: 100 # This used to get ball status
+#   dribble_gp_left: 100 # This used to trigger dribble
+#   dribble_gp_right: 100 # This used to trigger dcalribble
+
+#   low_dribble_arm_left: 118 #168
+#   low_dribble_arm_right: 162 #138
+
+#   high_dribble_arm_left: 165 #214
+#   high_dribble_arm_right: 118 #95
+
+#   perfect_backward_arm_left: 85
+#   perfect_backward_arm_right: 85
+#   perfect_forward_arm_left: 50
+#   perfect_forward_arm_right: 50
+#   dribble_arm_left_kick: 70
+#   dribble_arm_right_kick: 70
+#   kp_throttle_control: 70 #140
+#   ki_throttle_control: 0 #0.0000001
+#   kd_throttle_control: 0
+#   kp_dribble_vel: 14 #14
+#   ki_dribble_vel: 1
+#   kd_dribble_vel: 0
+
+Motor:
+  left_motor_port: 38
+  right_motor_port: 40
+  rear_motor_port: 39
+  kp_left_motor: 60
+  ki_left_motor: 1800
+  kp_right_motor: 60
+  ki_right_motor: 1800
+  kp_rear_motor: 60
+  ki_rear_motor: 1800
+
+Motion_PID:
+  to_point_position_kp: 1.8
+  to_point_position_ki: 0
+  to_point_position_kd: 0
+  to_point_angle_kp: 2.8
+  to_point_angle_ki: 0
+  to_point_angle_kd: 0.5
+
+  dribbling_position_kp: 1
+  dribbling_position_ki: 0.000001
+  dribbling_position_kd: 0
+  dribbling_angle_kp: 2.2
+  dribbling_angle_ki: 0.000001
+  dribbling_angle_kd: 0
+
+  # around_point_position_kp: 0.7
+  # around_point_position_ki: 0
+  # around_point_position_kd: 0.5
+  # around_point_angle_kp: 2.8
+  # around_point_angle_ki: 0
+  # around_point_angle_kd: 0
+  # around_point_arc_kp: 2.8
+  # around_point_arc_ki: 0
+  # around_point_arc_kd: 0
+
+  around_point_position_kp: 2
+  around_point_position_ki: 0
+  around_point_position_kd: 0
+  around_point_angle_kp: 2.2
+  around_point_angle_ki: 0
+  around_point_angle_kd: 0
+  around_point_arc_kp: 1.2
+  around_point_arc_ki: 0
+  around_point_arc_kd: 0
+
+Potential:
+  max_attr_field_radius: 200
+  max_repl_field_radius: 600
+
+Old_regression:
+  regression_orde: 6
+  regression_1: -7.8734158733200557e+003
+  regression_2: 2.8723292778449400e+002
+  regression_3: -4.1498527671691052e+000
+  regression_4: 2.9827839372977095e-002
+  regression_5: -1.0646024170403109e-004
+  regression_6: 1.5176462511395907e-007
+
+Limit:
+  angular_velocity: 550
+  linear_velocity: 600
+
+Passing_Points:
+  restricted_passing_areas: 50
+  total_point_x: 31
+  total_point_y: 31
+
+Line_ICP:
+  min_scan_line: 60 # Filter counted line points
+  max_scan_line: 300 # Filter counted line points
+  min_line_points_found_threshold: 40 # Filter counted line points
+  threshold_icp_score: 180 # This is threshold icp score
+  pos_diff: 5 # This is threshold that ICP will be run if robot was moved within this threshold
+  icp_max_iterations: 100 # This will set maximum ICP iteration to get convexed
+
+Obstacle:
+  min_scan_obs: 0
+  max_scan_obs: 500
+
+Pose_Estimator:
+  icp_gain: 0.015
+  # mechanical_offset_gain_x: -15.57403
+  # mechanical_offset_gain_y: -15.698163
+  # mechanical_offset_x: 15.279709
+  # mechanical_offset_y: 0.996528
+  # mechanical_offset_gain_x: 15.740927
+  # mechanical_offset_gain_y: 15.833992
+  # mechanical_offset_x: .552442
+  # mechanical_offset_y: 0.707621
+
+  mechanical_offset_gain_x: 16.4312895
+  mechanical_offset_gain_y: 16.3885145
+  mechanical_offset_x: -16.2903325
+  mechanical_offset_y: -1.3779725
+
+  # mechanical_offset_gain_x: 0
+  # mechanical_offset_gain_y: 0
+  # mechanical_offset_x: 0
+  # mechanical_offset_y: 0

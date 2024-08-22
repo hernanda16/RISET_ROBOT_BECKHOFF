@@ -1,0 +1,8 @@
+prefix=/run/media/her/Data/IRIS/RISET_IRIS_ROBOT/devel
+
+Name: iris_msgs
+Description: Description of iris_msgs
+Version: 0.0.0
+Cflags: -I/run/media/her/Data/IRIS/RISET_IRIS_ROBOT/devel/include
+Libs: -L${prefix}/lib 
+Requires: 

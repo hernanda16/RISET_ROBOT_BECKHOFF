@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROS Image Subscription Example</title>
+  <!-- ROS JavaScript library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/roslib/0.23.0/roslib.min.js"></script>
+</head>
+<body>
+  <canvas id="imageCanvas" width="640" height="480"></canvas>
+
+  <script>
+    // ROS initialization
+    const ros = new ROSLIB.Ros({
+      url: 'ws://localhost:9090'  // Change the URL according to your ROS environment
+    });
+
+    ros.on('connection', function() {
+      console.log('Connected to ROS.');
+    });
+
+    ros.on('error', function(error) {
+      console.error('Error connecting to ROS:', error);
+    });
+
+    ros.on('close', function() {
+      console.log('Connection to ROS closed.');
+    });
+
+    // Define the image topic name
+    const topicName = '/camera/image_raw';  // Change this to your image topic name
+
+    // Create an Image subscriber
+    const imageSubscriber = new ROSLIB.Topic({
+      ros: ros,
+      name: topicName,
+      messageType: 'sensor_msgs/Image'
+    });
+
+    // Get the canvas element and its context
+    const canvas = document.getElementById('imageCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Subscribe to the image topic
+    imageSubscriber.subscribe(function(message) {
+      // Create an image element to hold the received image
+      const img = new Image();
+
+      // Set the image source to the received data
+      img.src = 'data:image/jpeg;base64,' + message.data;
+
+      // Draw the image on the canvas
+      img.onload = function() {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      };
+    });
+  </script>
+</body>
+</html>

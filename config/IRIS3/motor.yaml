@@ -1,0 +1,9 @@
+left_motor_port: 17
+right_motor_port: 16
+rear_motor_port: 18
+kp_left_motor: 50
+ki_left_motor: 5
+kp_right_motor: 50
+ki_right_motor: 5
+kp_rear_motor: 50
+ki_rear_motor: 5

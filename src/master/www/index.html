@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Halo</title>
+  <link rel="stylesheet" href="css/controlbox.css" />
+
+  <script src="js/lib/roslib-0.20.0.min.js"></script>
+  <script src="js/lib/eventemitter2.js"></script>
+  <script src="js/lib/angular-1.7.2.min.js"></script>
+  <script src="js/lib/jquery-3.4.1.min.js"></script>
+  <script src="js/index.js"></script>
+
+</head>
+
+<body ng-app="mainApp" ng-controller="mainAppController">
+
+  <div class="grid grid-rows-10 gap-2">
+    <div class="row-span-2 m-4">
+      <h1 class="text-center font-semibold text-4xl">CONTROLBOX</h1>
+    </div>
+
+    <!-- TOGGLE -->
+    <div class="vision-toggle">
+      <div class="switch-toggle">
+        <label class="switch">
+          <input id="toggle" ng-click="toggleVision($event.currentTarget)" ng-init="initToggle()" type="checkbox">
+          <div class="slider-toggle"></div>
+        </label>
+      </div>
+      <h1>{{variablechange}}</h1>
+    </div>
+    <!-- TOGGLE -->
+
+    <div class="flex flex-row ">
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toField()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Field
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toGoalKeeper()"
+          class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          GoalKeeper
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toBall()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Ball
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toLine()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Line
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toICP()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          ICP
+        </button>
+      </div>
+<div class="flex flex-col mx-auto">
+        <button ng-click="toGrapher()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Grapher
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toExport()" id="export"
+          class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Export
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toVirtualPoints()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Virtual Points
+        </button>
+      </div>
+    </div>
+
+
+  </div>
+
+</body>
+
+</html>

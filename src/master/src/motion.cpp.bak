@@ -1,0 +1,430 @@
+#include "master/master.hpp"
+
+using namespace ruckig;
+
+void Master::manualMotion(float vx, float vy, float vtheta)
+{
+    // static vel2d_t buffer_vel = { 0, 0, 0 };
+
+    // polar2d_t polar_vel;
+    // float dx = x - buffer_vel.x;
+    // float dy = y - buffer_vel.y;
+    // polar_vel.r = sqrt(pow(dx, 2) + pow(dy, 2));
+    // polar_vel.theta = atan2(dy, dx);
+
+    // if (polar_vel.r > 2.3123) {
+    //     polar_vel.r = 2.3123;
+    // }
+
+    // buffer_vel.x += polar_vel.r * cos(polar_vel.theta);
+    // buffer_vel.y += polar_vel.r * sin(polar_vel.theta);
+    // buffer_vel.theta = theta;
+
+    // act_vel.x = buffer_vel.x;
+    // act_vel.y = buffer_vel.y;
+    // act_vel.theta = buffer_vel.theta;
+
+    act_vel.x = vx;
+    act_vel.y = vy;
+    act_vel.theta = vtheta;
+    return;
+}
+
+int8_t Master::motionToPoint(float target_x, float target_y, float target_theta, profile_t translation_profile, profile_t rotation_profile)
+{
+    static Ruckig<3> control(1); //ROS Rate(100Hz)
+    static InputParameter<3> control_input;
+    static OutputParameter<3> control_output;
+
+    pose2d_t pose_buffer;
+    pose_buffer.x = final_pose.x;
+    pose_buffer.y = final_pose.y;
+    pose_buffer.theta = final_pose.theta;
+
+    float dth = pose_buffer.theta - target_theta;
+
+    if (dth > 180) {
+        dth -= 360;
+    } else if (dth < -180) {
+        dth += 360;
+    }
+
+    float new_target_theta = pose_buffer.theta - dth;
+
+    control_input.current_position = { pose_buffer.x, pose_buffer.y, pose_buffer.theta };
+    control_input.current_velocity = { world_vel.x, world_vel.y, world_vel.theta };
+    control_input.current_acceleration = { world_accel.x, world_accel.y, world_accel.theta };
+
+    control_input.target_position = { target_x, target_y, new_target_theta };
+    control_input.target_velocity = { world_vel.x, world_vel.y, world_vel.theta };
+    control_input.target_acceleration = { world_accel.x, world_accel.y, world_accel.theta };
+
+    control_input.max_velocity = { translation_profile.max_velocity, translation_profile.max_velocity, rotation_profile.max_velocity };
+    control_input.max_acceleration = { translation_profile.max_acceleration, translation_profile.max_acceleration, rotation_profile.max_acceleration };
+    control_input.max_jerk = { translation_profile.max_jerk, translation_profile.max_jerk, rotation_profile.max_jerk };
+
+    control_input.control_interface = ControlInterface::Position;
+
+    int control_state = control.update(control_input, control_output);
+
+    pose2d_t calculated_pose;
+    calculated_pose.x = control_output.new_position[0];
+    calculated_pose.y = control_output.new_position[1];
+    calculated_pose.theta = control_output.new_position[2];
+
+    vel2d_t d_calc_fb;
+    d_calc_fb.x = calculated_pose.x - pose_buffer.x;
+    d_calc_fb.y = calculated_pose.y - pose_buffer.y;
+    d_calc_fb.theta = calculated_pose.theta - pose_buffer.theta;
+
+    printf("(%d) pose: %.2f, %.2f, %.2f || ruckig %.2f %.2f %.2f || %.2f %.2f %.2f\n", control_state, pose_buffer.x, pose_buffer.y, pose_buffer.theta,
+        control_output.new_position[0],
+        control_output.new_position[1],
+        control_output.new_position[2], d_calc_fb.x, d_calc_fb.y, d_calc_fb.theta);
+
+    world_vel.x = control_output.new_velocity[0];
+    world_vel.y = control_output.new_velocity[1];
+    world_vel.theta = control_output.new_velocity[2];
+
+    world_accel.x = control_output.new_acceleration[0];
+    world_accel.y = control_output.new_acceleration[1];
+    world_accel.theta = control_output.new_acceleration[2];
+
+    // control_output.pass_to_input(control_input);
+
+    if (control_state == Result::Working) {
+        worldToLocalMotion(world_vel.x + d_calc_fb.x, world_vel.y + d_calc_fb.y, world_vel.theta + d_calc_fb.theta);
+    }
+
+    float dx = target_x - final_pose.x;
+    float dy = target_y - final_pose.y;
+    float dtheta = target_theta - final_pose.theta;
+
+    if (dtheta > 180) {
+        dtheta -= 360;
+    } else if (dtheta < -180) {
+        dtheta += 360;
+    }
+
+    float error_translation = sqrt(pow(dx, 2) + pow(dy, 2));
+    float error_rotation = dtheta;
+
+    if (fabs(error_translation) < 20 && fabs(error_rotation) < 5) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int8_t Master::ruckigToPoint(float target_x, float target_y, float target_theta, profile_t translation_profile, profile_t rotation_profile, uint16_t minmax_vel_linear, uint16_t minmax_vel_angular)
+{
+    //TODO : Make Config
+    static PID linear_pid(5, 0.01, 0);
+    static PID angular_pid(2.8, 0, 0.5);
+
+    static Ruckig<3> otg(0.01); // control cycle
+    static InputParameter<3> input;
+    static OutputParameter<3> output;
+
+    static pose2d_t prev_target = { 0, 0, 0 };
+
+    static vel2d_t last_feedback_vel = { 0, 0, 0 };
+    feedback_accel.x = (feedback_vel.x - last_feedback_vel.x);
+    feedback_accel.y = (feedback_vel.y - last_feedback_vel.y);
+    feedback_accel.theta = (feedback_vel.theta - last_feedback_vel.theta);
+    last_feedback_vel = feedback_vel;
+
+    if (target_x != prev_target.x || target_y != prev_target.y || target_theta != prev_target.theta) {
+        // Set input parameters
+        input.current_position = { final_pose.x, final_pose.y, final_pose.theta };
+        input.current_velocity = { feedback_vel.x, feedback_vel.y, feedback_vel.theta };
+        input.current_acceleration = { feedback_accel.x, feedback_accel.y, feedback_accel.theta };
+
+        input.target_position = { target_x, target_y, target_theta };
+        input.target_velocity = { 0, 0, 0 };
+        input.target_acceleration = { 0, 0, 0 };
+
+        input.max_velocity = { translation_profile.max_velocity, translation_profile.max_velocity, rotation_profile.max_velocity };
+        input.max_acceleration = { translation_profile.max_acceleration, translation_profile.max_acceleration, rotation_profile.max_acceleration };
+        input.max_jerk = { translation_profile.max_jerk, translation_profile.max_jerk, rotation_profile.max_jerk };
+
+        prev_target.x = target_x;
+        prev_target.y = target_y;
+        prev_target.theta = target_theta;
+
+        linear_pid.reset();
+        angular_pid.reset();
+    }
+
+    if (otg.update(input, output) == Result::Working) {
+        output.pass_to_input(input);
+    }
+
+    printf("New vel : %.2f, %.2f, %.2f\n", output.new_velocity[0], output.new_velocity[1], output.new_velocity[2]);
+
+    float error_x = 0;
+    float error_y = 0;
+    float error_linear = 0;
+    float error_angular = 0;
+
+    error_x = output.new_velocity[0] - feedback_vel.x;
+    error_y = output.new_velocity[2] - feedback_vel.y;
+
+    printf("Error : %.2f, %.2f\n", error_x, error_y);
+
+    error_linear = sqrt(error_x * error_x + error_y * error_y);
+    error_angular = output.new_velocity[2] - feedback_vel.theta;
+
+    (error_angular > 180) ? error_angular -= 360 : (error_angular < -180) ? error_angular += 360
+                                                                          : error_angular;
+
+    vel2d_t output_vel = { 0, 0, 0 };
+    float buffer_linear_vel;
+    buffer_linear_vel = linear_pid.calculate(error_linear, 2);
+    output_vel.theta += angular_pid.calculate(error_angular, 2);
+
+    output_vel.x += buffer_linear_vel * cos(atan2(error_y, error_x));
+    output_vel.y += buffer_linear_vel * sin(atan2(error_y, error_x));
+
+    printf("Output Vel: %.2f, %.2f, %.2f\n", output_vel.x, output_vel.y, output_vel.theta);
+
+    worldToLocalMotion(output.new_velocity[0], output.new_velocity[1], output.new_velocity[2]);
+
+    if (fabs(error_linear) < 20 && fabs(error_angular) < 5) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int8_t Motion::motionToPoint(float target_x, float target_y, float target_theta, uint16_t minmax_vel_linear, uint16_t minmax_vel_angular)
+{
+    //TODO : Make Config
+    static PID linear_pid(1.8, 0, 0);
+    static PID angular_pid(2.8, 0, 0.5);
+
+    static pose2d_t last_target;
+    memset(&last_target, 0, sizeof(pose2d_t));
+
+    if (last_target.x != target_x || last_target.y != target_y || last_target.theta != target_theta) {
+        linear_pid.reset();
+        angular_pid.reset();
+
+        last_target.x = target_x;
+        last_target.y = target_y;
+        last_target.theta = target_theta;
+    }
+
+    float error_x = 0;
+    float error_y = 0;
+    float error_linear = 0;
+    float error_angular = 0;
+
+    error_x = target_x - final_pose->x;
+    error_y = target_y - final_pose->y;
+
+    error_linear = sqrt(error_x * error_x + error_y * error_y);
+    error_angular = target_theta - final_pose->theta;
+
+    (error_angular > 180) ? error_angular -= 360 : (error_angular < -180) ? error_angular += 360
+                                                                          : error_angular;
+
+    vel2d_t output_vel;
+    float buffer_linear_vel;
+    buffer_linear_vel = linear_pid.calculate(error_linear, minmax_vel_linear);
+    output_vel.theta = angular_pid.calculate(error_angular, minmax_vel_angular);
+
+    output_vel.x = buffer_linear_vel * cos(atan2(error_y, error_x));
+    output_vel.y = buffer_linear_vel * sin(atan2(error_y, error_x));
+
+    worldToLocalMotion(output_vel.x, output_vel.y, output_vel.theta);
+
+    if (fabs(error_linear) < 20 && fabs(error_angular) < 5) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int8_t Master::motionAroundPoint(float target_x, float target_y, float target_theta, uint16_t radius_point, uint16_t minmax_vel_linear, uint16_t minmax_vel_angular)
+{
+    PID linear_pid(1.3, 0, 0);
+    PID angular_pid(3, 0, 0);
+    PID arching_pid(1.8, 0.0000001, 0);
+
+    float error_x = 0;
+    float error_y = 0;
+    float error_linear = 0;
+    float error_angular = 0;
+
+    error_x = target_x - final_pose.x;
+    error_y = target_y - final_pose.y;
+
+    error_linear = sqrt(error_x * error_x + error_y * error_y) - radius_point;
+    error_angular = angleToTarget(target_x, target_y) - final_pose.theta;
+
+    (error_angular > 180) ? error_angular -= 360 : (error_angular < -180) ? error_angular += 360
+                                                                          : error_angular;
+
+    float error_arching = target_theta - angleToTarget(target_x, target_y);
+    (error_arching > 180) ? error_arching -= 360 : (error_arching < -180) ? error_arching += 360
+                                                                          : error_arching;
+
+    float circumfence = 2 * M_PI * pythagoras(target_x, final_pose.x, target_y, final_pose.y);
+    float arc_error = circumfence * error_arching * 0.00277777777;
+
+    /* Output Position */
+    float output_linear = linear_pid.calculate(error_linear, minmax_vel_linear);
+    /* Output Theta */
+    float output_angular = angular_pid.calculate(error_angular, minmax_vel_angular);
+    /* Output Arc */
+    float output_arching = arching_pid.calculate(arc_error, minmax_vel_linear);
+
+    vel2d_t output_vel;
+
+    output_vel.x = output_linear * cos(atan2(error_y, error_x)) + output_arching * cos(atan2(error_y, error_x) - M_PI_2);
+    output_vel.y = output_linear * sin(atan2(error_y, error_x)) + output_arching * sin(atan2(error_y, error_x) - M_PI_2);
+    output_vel.theta = output_angular;
+
+    worldToLocalMotion(output_vel.x, output_vel.y, output_vel.theta);
+
+    if (fabs(error_linear) < 20 && fabs(error_angular) < 5) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int8_t Master::motionAroundPointAngle(float target_x, float target_y, int16_t radius, float arc_target_th, float robot_target_th, int16_t minmax_vel_linear, int16_t minmax_vel_angular, bool flags)
+{
+    static PID linear_pid(1.1, 0, 0);
+    static PID angular_pid(2.5, 0, 0);
+    static PID arching_pid(1.3, 0.0000001, 0);
+
+    float error_x = 0;
+    float error_y = 0;
+    float error_linear = 0;
+    float error_angular = 0;
+
+    error_x = target_x - final_pose.x;
+    error_y = target_y - final_pose.y;
+
+    error_linear = sqrt(error_x * error_x + error_y * error_y) - radius;
+    error_angular = robot_target_th - final_pose.theta - 180 * flags;
+
+    (error_angular > 180) ? error_angular -= 360 : (error_angular < -180) ? error_angular += 360
+                                                                          : error_angular;
+
+    float error_arching = robot_target_th - angleToTarget(target_x, target_y);
+    (error_arching > 180) ? error_arching -= 360 : (error_arching < -180) ? error_arching += 360
+                                                                          : error_arching;
+
+    float circumfence = 2 * M_PI * pythagoras(target_x, final_pose.x, target_y, final_pose.y);
+    float arc_error = circumfence * error_arching * 0.00277777777;
+
+    /* Output Position */
+    float output_linear = linear_pid.calculate(error_linear, minmax_vel_linear);
+    /* Output Theta */
+    float output_angular = angular_pid.calculate(error_angular, minmax_vel_angular);
+    /* Output Arc */
+    float output_arching = arching_pid.calculate(arc_error, minmax_vel_linear);
+
+    vel2d_t output_vel;
+
+    output_vel.x = output_linear * cos(atan2(error_y, error_x)) + output_arching * cos(atan2(error_y, error_x) - M_PI_2);
+    output_vel.y = output_linear * sin(atan2(error_y, error_x)) + output_arching * sin(atan2(error_y, error_x) - M_PI_2);
+    output_vel.theta = output_angular;
+
+    worldToLocalMotion(output_vel.x, output_vel.y, output_vel.theta);
+
+    if (fabs(error_linear) < 20 && fabs(error_angular) < 9 && fabs(error_arching) < 20) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+void Master::worldToLocalMotion(float vx, float vy, float vtheta)
+{
+    vel2d_t buffer_vel;
+    buffer_vel.x = vx * sin(final_pose.theta DEG2RAD) - vy * cos(final_pose.theta DEG2RAD);
+    buffer_vel.y = vx * cos(final_pose.theta DEG2RAD) + vy * sin(final_pose.theta DEG2RAD);
+
+    manualMotion(buffer_vel.x, buffer_vel.y, vtheta);
+    return;
+}
+
+int8_t Master::positionControl(float target_x, float target_y, float target_theta, profile_t translation_profile, profile_t rotation_profile)
+{
+    static Ruckig<3> control(0.01); //ROS Rate(100Hz)
+    static InputParameter<3> control_input;
+    static OutputParameter<3> control_output;
+
+    static vel2d_t last_feedback_vel = { 0, 0, 0 };
+    feedback_accel.x = (feedback_vel.x - last_feedback_vel.x);
+    feedback_accel.y = (feedback_vel.y - last_feedback_vel.y);
+    feedback_accel.theta = (feedback_vel.theta - last_feedback_vel.theta);
+    last_feedback_vel = feedback_vel;
+
+    static pose2d_t last_target = { 0, 0, 0 };
+
+    // ROS_INFO("Target Position: %.2f, %.2f, %.2f", target_x, target_y, target_theta);
+    ROS_INFO("Current Position: %.2f, %.2f, %.2f", final_pose.x, final_pose.y, final_pose.theta);
+    // ROS_WARN("Current Velocity: %.2f, %.2f, %.2f", feedback_vel.x, feedback_vel.y, feedback_vel.theta);
+    // ROS_ERROR("Current Acceleration: %.2f, %.2f, %.2f\n", feedback_accel.x, feedback_accel.y, feedback_accel.theta);
+
+    if (last_target.x != target_x || last_target.y != target_y || last_target.theta != target_theta) {
+        control_input.current_position = { final_pose.x, final_pose.y, final_pose.theta };
+        control_input.current_velocity = { feedback_vel.x, feedback_vel.y, feedback_vel.theta };
+        control_input.current_acceleration = { feedback_accel.x, feedback_accel.y, feedback_accel.theta };
+
+        control_input.target_position = { target_x, target_y, target_theta };
+        control_input.target_velocity = { 0, 0, 0 };
+        control_input.target_acceleration = { 0, 0, 0 };
+
+        control_input.max_velocity = { translation_profile.max_velocity, translation_profile.max_velocity, rotation_profile.max_velocity };
+        control_input.max_acceleration = { translation_profile.max_acceleration, translation_profile.max_acceleration, rotation_profile.max_acceleration };
+        control_input.max_jerk = { translation_profile.max_jerk, translation_profile.max_jerk, rotation_profile.max_jerk };
+
+        last_target.x = target_x;
+        last_target.y = target_y;
+        last_target.theta = target_theta;
+    }
+
+    control.update(control_input, control_output);
+    // control_input.control_interface = ControlInterface::Position;
+    std::cout << control_output.time << " | " << join(control_output.new_position) << std::endl;
+
+    // if (control.update(control_input, control_output) == Result::Working) {
+    //     ROS_WARN("New Position: %.2f, %.2f, %.2f", control_output.new_position[0], control_output.new_position[1], control_output.new_position[2]);
+    //     ROS_ERROR("New Velocity: %.2f, %.2f, %.2f\n", control_output.new_velocity[0], control_output.new_velocity[1], control_output.new_velocity[2]);
+    worldToLocalMotion(control_output.new_velocity[0], control_output.new_velocity[1], control_output.new_velocity[2]);
+    // }
+
+    float dx = target_x - final_pose.x;
+    float dy = target_y - final_pose.y;
+    float dtheta = target_theta - final_pose.theta;
+
+    if (dtheta > 180) {
+        dtheta -= 360;
+    } else if (dtheta < -180) {
+        dtheta += 360;
+    }
+
+    float error_translation = sqrt(pow(dx, 2) + pow(dy, 2));
+    float error_rotation = dtheta;
+
+    if (fabs(error_translation) < 20 && fabs(error_rotation) < 5) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+float Master::angleToTarget(float target_x, float target_y)
+{
+    float dx = target_x - final_pose.x;
+    float dy = target_y - final_pose.y;
+
+    return atan2(dy, dx) RAD2DEG;
+}

@@ -1,0 +1,11 @@
+uint8 kicker_mode
+float32 kicker_power
+uint16 kicker_position
+uint8 buzzer_cnt
+uint8 buzzer_time
+uint16 global_kicker_position
+uint8 dribble_up
+uint8 enable_auto_correct_position
+uint8 force_dribble_control
+uint8 long_dribble_control
+uint8 stand_by

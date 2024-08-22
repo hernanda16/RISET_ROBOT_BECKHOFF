@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>IRIS - Control Box</title>
+  <meta name="description" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- <link rel="stylesheet" href="css/icon.css"> -->
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/duyplus/fontawesome-pro/css/all.min.css"> -->
+  <link rel="stylesheet" href="css/controlbox.css" />
+
+  <!-- script -->
+  <script src="js/lib/roslib-0.20.0.min.js"></script>
+  <script src="js/lib/eventemitter2.js"></script>
+  <script src="js/lib/angular-1.7.2.min.js"></script>
+  <script src="js/lib/jquery-3.4.1.min.js"></script>
+  <script src="js/new.js"></script>
+  <script src="js/route.js"></script>
+</head>
+
+<body ng-app="MainAppField" ng-controller="FieldController" class="bg-zinc-900 text-zinc-50 overflow-hidden">
+  <div class="grid grid-rows-10 gap-2">
+    <div class="row-span-2 m-4">
+      <h1 class="text-center font-semibold text-4xl">Field ControlBox</h1>
+    </div>
+
+    <!-- TOGGLE -->
+    <div class="vision-toggle">
+      <div class="switch-toggle">
+        <label class="switch">
+          <input id="toggle" ng-click="toggleVision($event.currentTarget)" ng-init="initToggle()" type="checkbox">
+          <div class="slider-toggle"></div>
+          <!-- {{ toggleSetter().css }} -->
+        </label>
+      </div>
+      <h1>{{variablechange}}</h1>
+    </div>
+
+    <!-- TOGGLE -->
+
+    <div class="flex flex-row ">
+      <div class="flex flex-col mx-auto">
+        <button onclick="toField()"
+          class="p-4 mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Field
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button onclick="toGoalKeeper()"
+          class="p-4 mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          GoalKeeper
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button onclick="toBall()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Ball
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button onclick="toLine()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Line
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button onclick="toICP()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          ICP
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button onclick="toGrapher()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Grapher
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button onclick="toPassingPoints()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          PassingPoints
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button onclick="toExport()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Export
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button onclick="toVirtualPoints()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Virtual Points
+        </button>
+      </div>
+    </div>
+
+
+
+    <div class="grid grid-cols-9 row-span-8 gap-6 m-1">
+      <div class="col-span-4">
+        <h1 class="text-center font-semibold text-2xl">Robot Display</h1>
+        <br> <br>
+
+        <!-- display camera -->
+        <div class="flex flex-row justify-center">
+
+          <div class="flex flex-col">
+            <div class="mb-4 mx-4 w-[270px] h-[540px] bg-transparent shadow-lg">
+              <h3 class="text-center py-2">KAMERA</h3>
+              <img class="w-full h-full object-contain" src="{{ frame_image_0 }}" alt="" />
+            </div>
+          </div>
+
+
+          <div class="flex flex-col">
+            <div class="mb-4 mx-4 w-[270px] h-[540px] bg-transparent shadow-lg">
+              <h3 class="text-center py-2">LAYER TOTAL</h3>
+              <img class="w-full h-full object-contain" src="{{ frame_image_1 }}" alt="" />
+            </div>
+          </div>
+
+          <div class="flex flex-col">
+            <div class="mb-4 mx-4 w-[270px] h-[540px] bg-transparent shadow-lg">
+              <h3 class="text-center py-2">LAYER 1</h3>
+              <img class="w-x`full h-full object-contain" src="{{ frame_image_2 }}" alt="" />
+            </div>
+          </div>
+
+          <div class="flex flex-col">
+            <div class="mb-4 mx-4 w-[270px] h-[540px] bg-transparent shadow-lg">
+              <h3 class="text-center py-2">LAYER 2</h3>
+              <img class="w-x`full h-full object-contain" src="{{ frame_image_3 }}" alt="" />
+            </div>
+          </div>
+
+          <div class="flex flex-col">
+            <div class="mb-4 mx-4 w-[270px] h-[540px] bg-transparent shadow-lg">
+              <h3 class="text-center py-2">LAYER 3</h3>
+              <img class="w-x`full h-full object-contain" src="{{ frame_image_4 }}" alt="" />
+            </div>
+          </div>
+
+
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

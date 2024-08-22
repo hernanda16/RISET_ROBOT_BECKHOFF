@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Virtual Points</title>
+  <link rel="stylesheet" href="css/controlbox.css" />
+
+
+  <script src="js/lib/roslib-0.20.0.min.js"></script>
+  <script src="js/lib/eventemitter2.js"></script>
+  <script src="js/lib/angular-1.7.2.min.js"></script>
+  <script src="js/lib/jquery-3.4.1.min.js"></script>
+  <script src="js/virtual_points.js"></script>
+
+</head>
+
+<body ng-app="mainApp" ng-controller="mainAppController">
+
+  <div class="grid grid-rows-10 gap-2">
+    <div class="row-span-2 m-4">
+      <h1 class="text-center font-semibold text-4xl">Virtual Points</h1>
+    </div>
+
+    <!-- TOGGLE -->
+    <div class="vision-toggle">
+      <div class="switch-toggle">
+        <label class="switch">
+          <input id="toggle" ng-click="toggleVision($event.currentTarget)" ng-init="initToggle()" type="checkbox">
+          <div class="slider-toggle"></div>
+        </label>
+      </div>
+      <h1>{{variablechange}}</h1>
+    </div>
+
+    <!-- TOGGLE -->
+
+    <div class="flex flex-row ">
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toField()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Field
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toBall()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Ball
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toLine()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Line
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toICP()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          ICP
+        </button>
+      </div>
+<div class="flex flex-col mx-auto">
+        <button ng-click="toGrapher()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Grapher
+        </button>
+      </div>
+      <!-- <div class="flex flex-col mx-auto">
+        <button ng-click="toPotential()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Potential
+        </button>
+      </div> -->
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toVirtualPoints()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Virtual Points
+        </button>
+      </div>
+      <div class="flex flex-col mx-auto">
+        <button ng-click="toExport()" class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Export
+        </button>
+      </div>
+    </div>
+
+  </div>
+  <div class="image">
+    <img class="frameField" src="{{ frame_field }}" alt="" />
+  </div>
+  <div class="flex flex-col thresholdingLine">
+    <div class="bg-zinc-700 rounded-2xl overflow-hidden">
+      <h1 class="text-center font-semibold text-2xl">Thresholding</h1>
+      <div class="px-4 py-4 gap-4 grid grid-cols-2">
+        <div class="slider my-auto">
+          <!-- REPEAT THRESSHOLD -->
+          <div class="grid grid-cols-6 pb-2" ng-repeat="i in virtual_points_params   ">
+            <h1 class="col-span-1 place-self-center">{{i.label}}</h1>
+            <input ng-change="PublishThresholdParams(virtual_points_params )" type="range"
+              class="col-span-4 w-full" min="{{i.min}}" max="{{i.max}}" ng-model="i.value" />
+            <h1 class="col-span-1 place-self-center">{{i.value}}</h1>
+          </div>
+        </div>
+        <div class="helper place-self-center">
+          <div class="w-full">
+            <img src="./hsv.png" class="w-full" alt="hsv" />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex pb-4">
+        <button ng-click="set_default_thresshold_lapangan()"
+          class="mx-auto hover:bg-orange-700 bg-orange-500 text-bla px-2 py-1 rounded-lg">
+          Reset to Default
+        </button>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
